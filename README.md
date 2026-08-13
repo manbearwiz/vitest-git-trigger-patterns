@@ -7,11 +7,13 @@
 [![GitHub issues](https://img.shields.io/github/issues/manbearwiz/vitest-git-trigger-patterns?style=flat-square)](https://github.com/manbearwiz/vitest-git-trigger-patterns/issues)
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release&style=flat-square)](https://github.com/semantic-release/semantic-release)
 
-Git VCS provider for Vitest to map broad changed files to focused tests during `--changed` runs
+A custom Git VCS provider for Vitest that maps broad file changes to focused tests during `--changed` runs, mirroring the behavior of the [`watchTriggerPatterns`](https://vitest.dev/config/watchtriggerpatterns) configuration.
 
 ## Why?
 
-- Vitest's `--changed` option is great for running tests related to changed files, but it can be too broad in some cases. For example, if you change a shared icon or style file, Vitest will run all tests that import that file, which can be a lot of tests.
+Vitest's `--changed` flag is incredibly useful for running tests related to changed files, but it can sometimes be too broad. For example, modifying a globally shared icon or style file might trigger every test that imports it. 
+
+While Vitest allows you to narrow this focus in `watch` mode using `watchTriggerPatterns`, those patterns are ignored when using the `--changed` flag. This package bridges that gap.
 
 ## Installation
 
@@ -21,7 +23,7 @@ npm install --save-dev vitest-git-trigger-patterns
 
 ## Usage
 
-You can specify the VCS provider in your `vitest.config.ts`:
+Specify the custom VCS provider in your `vitest.config.ts`:
 
 ```ts
 import type { UserConfig } from "vitest/config";
@@ -51,8 +53,11 @@ Run Vitest with changed-file detection as usual:
 
 ```sh
 vitest --changed
+# or against a specific branch
 vitest --changed origin/main
 ```
+
+## How It Works
 
 Patterns receive the absolute changed-file path and the result of `RegExp.exec`. Returned test paths may be absolute or relative to the Vitest project root. Files that do not match a pattern are passed through for Vitest's normal module-graph handling.
 
